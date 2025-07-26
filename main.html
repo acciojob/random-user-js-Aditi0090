@@ -1,16 +1,90 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-	<link rel="stylesheet" href="styles.css">
-</head>
+  <meta charset="UTF-8" />
+  <title>Random User JS</title>
+  <style>
+    #user-container {
+      max-width: 300px;
+      margin: auto;
+      text-align: center;
+    }
 
+    img {
+      width: 150px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
 <body>
-	<!-- the entire body must be written by student -->
-    <script type="text/javascript" src="./script.js">
-</script>
+
+  <div id="user-container">
+    <img id="userImage" src="" alt="User Image" />
+    <h2 id="userName">Full Name</h2>
+
+    <div id="buttons">
+      <button data-attr="age">Age</button>
+      <button data-attr="email">Email</button>
+      <button data-attr="phone">Phone</button>
+    </div>
+
+    <section>
+      <h3>Additional Info</h3>
+      <p id="additionalInfo"></p>
+    </section>
+
+    <button id="getUser">Get New User</button>
+  </div>
+
+  <script>
+    let userData = null;
+
+    function fetchUser() {
+      fetch('https://randomuser.me/api/')
+        .then(res => res.json())
+        .then(data => {
+          const user = data.results[0];
+          userData = {
+            fullName: `${user.name.first} ${user.name.last}`,
+            image: user.picture.large,
+            age: user.dob.age,
+            email: user.email,
+            phone: user.phone,
+          };
+          displayUserInfo();
+        })
+        .catch(err => {
+          console.error('Error fetching user:', err);
+        });
+    }
+
+    function displayUserInfo() {
+      document.getElementById('userName').textContent = userData.fullName;
+      document.getElementById('userImage').src = userData.image;
+      document.getElementById('additionalInfo').textContent = '';
+    }
+
+    function handleInfoButtonClick(event) {
+      const attr = event.target.getAttribute('data-attr');
+      if (!attr || !userData) return;
+      document.getElementById('additionalInfo').textContent = userData[attr];
+    }
+
+    document.getElementById('getUser').addEventListener('click', fetchUser);
+
+    document.querySelectorAll('button[data-attr]').forEach(button => {
+      button.addEventListener('click', handleInfoButtonClick);
+    });
+
+    window.addEventListener('DOMContentLoaded', fetchUser);
+  </script>
 
 </body>
-
 </html>
